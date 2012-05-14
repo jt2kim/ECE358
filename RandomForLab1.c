@@ -1,3 +1,4 @@
+/* New comment by Jay */
 /* A C-program for MT19937: Real number version                */
 /*   genrand() generates one pseudorandom real number (double) */
 /* which is uniformly distributed on [0,1]-interval, for each  */

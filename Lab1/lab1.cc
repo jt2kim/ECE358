@@ -2,6 +2,10 @@
 
 using namespace std;
 
+extern "C" {
+	#include "RandomForLab1.h";
+}
+
 int main() {
 	int j;
 	double u,lambda=100,x,sum=0,Mean,var1=0,Variance;
@@ -32,7 +36,7 @@ void startSimulation(int ticks) {
 }
 
 void arrival(int t) {
-
+	
 }
 
 void departure (int t) {

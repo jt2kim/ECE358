@@ -3,8 +3,11 @@
 using namespace std;
 
 extern "C" {
-	#include "RandomForLab1.h";
+	#include "RandomForLab1.h"
 }
+queue<int> buffer;
+
+
 
 int main() {
 	int j;

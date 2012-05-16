@@ -1,5 +1,6 @@
 #ifndef LAB_ONE
 #define LAB_ONE
 #include <queue>
-queue<int> buffer;
+#include <math.h>
+
 #endif

@@ -8,7 +8,7 @@ extern "C" {
 queue<int> buffer;
 list<int> averageInQueue;
 list<double> averageDelay;
-list<double> average idleTIme;
+list<double> averageIdleTIme;
 
 int main() {
 	int j;
@@ -34,16 +34,16 @@ int main() {
 
 void startSimulation(int ticks) {
 	for (int t = 1; t <= ticks; t++) {
-		Arrival(t);
-		Departure(t);
+		arrival(t);
+		departure(t);
 	}
 }
 
-void arrival(int t) {
+int arrival(int t) {
 	
 }
 
-void departure (int t) {
+int departure (int t) {
 
 }
 

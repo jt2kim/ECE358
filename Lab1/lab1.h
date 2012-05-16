@@ -6,5 +6,5 @@
 void startSimulation(int ticks);
 int arrival(int t);
 int departure(int t);
-void computePeformances();
+void computePerformances();
 #endif

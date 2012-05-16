@@ -30,6 +30,13 @@ int main() {
 	printf("Mean = %5f\n",Mean);
 	printf("Variance = %5f\n",Variance);
 	printf("\n");
+    
+    /*
+    initialization
+    
+    startSimulation(ticks);
+    computePerformances();
+    */
 }
 
 void startSimulation(int ticks) {
@@ -44,7 +51,7 @@ void arrival(int t) {
 }
 
 void departure (int t) {
-
+    
 }
 
 

@@ -38,13 +38,25 @@ int arrival(int t) {
 	if (t % t_arrival == 0) {
 		cout << "Packet Generated" << endl;
 		cout << "i value is " << i << endl;
+        buffer.push(i);
 	}
 	
 		
 }
 
 int departure (int t) {
-
+    int queueSize = buffer.size();
+    if(queueSize == 0)
+        return 0;
+    else
+    {
+        if( (t % t_departure) == 0)
+        {
+            averageInQueue.push_back(queueSize);
+            buffer.pop();
+            cout << "packed popped"<<endl;
+        }        
+    }
 
 }
 

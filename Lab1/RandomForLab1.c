@@ -100,25 +100,3 @@ genrand()
     return ( (double)y / (unsigned long)0xffffffff ); /* reals */
     /* return y; */ /* for integer generation */
 }
-
-
-/* this main() outputs first 1000 generated numbers  */
-main()
-{ 
-    int j;
-	float u;
-		//x;
-  //  int lamda=100;
-	u=genrand();
-//    x=(-1/lambda)*log(u);
-
-    sgenrand(4357); /* any nonzero integer can be used as a seed */
-    for (j=0; j<1000; j++) {
-        printf("%5f \n", genrand());
-		printf("%5f\n",u);
-        if (j%8==7) printf("\n");
-    }
-    printf("\n");
-}
-
-

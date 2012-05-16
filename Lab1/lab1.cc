@@ -6,8 +6,9 @@ extern "C" {
 	#include "RandomForLab1.h"
 }
 queue<int> buffer;
-
-
+list<int> averageInQueue;
+list<double> averageDelay;
+list<double> average idleTIme;
 
 int main() {
 	int j;

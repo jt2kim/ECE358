@@ -50,6 +50,8 @@ int main(int argc, char* argv[]) {
 
 void startSimulation(int ticks) {
 	for (int t = 1; t <= ticks; t++) {
+    //if buffer empty
+       /// idle += 1.0
 		arrival(t);
 		departure(t);
 	}
@@ -60,9 +62,16 @@ int arrival(int t) {
 	if (t % t_arrival == 0) {
 		cout << "Packet Generated" << endl;
 		cout << "packetIndex value is " << packetIndex << endl;
+        
+        //getSize of the queue, and push to the averageInQueue list
+        
+        //if buffer is currently empty
+            // save the current idle time in a list
+        
 			//If buffer is not full, add packet to buffer
 			if (buffer.size() != bufferSize)
 				buffer.push(packetIndex);
+                
 	}
 	packetIndex++;
 		
@@ -78,6 +87,9 @@ int departure (int t) {
         {
             averageInQueue.push_back(queueSize);
             buffer.pop();
+            if(buffer.size() == 0)                
+                //reset idle
+                
             cout << "Packed popped."<< endl;
         }        
     }

@@ -10,9 +10,10 @@ void computePerformances();
 
 class Packet
 {
+public:
     double startTick;
     double getStartTick();
-    Packet();
+    Packet(double start);
 };
 
 #endif

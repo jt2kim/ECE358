@@ -1,7 +1,7 @@
 #include "lab1.h"
 #include <iostream>
 #include <string>
-
+#include <cstring>
 using namespace std;
 
 extern "C" {

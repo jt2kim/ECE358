@@ -89,7 +89,7 @@ int departure (int t_1, int t_2) {
         return 0;
     else
     {
-        if( (t_1 % t_departure) == 0 || (t_2 % departure) == 0 )
+        if( (t_1 % t_departure) == 0 || (t_2 % t_departure) == 0 )
         {
             averageInQueue.push_back(queueSize);
             buffer.pop();

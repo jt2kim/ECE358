@@ -1,6 +1,8 @@
 #include "lab1.h"
 #include <iostream>
 #include <string>
+#include <cstring>
+#include <sstream>
 
 using namespace std;
 
@@ -35,7 +37,9 @@ int main(int argc, char* argv[]) {
 	}
 	
 	if (parsedTokens[3] != "") {
-		bufferSize = atoi(parsedTokens[3].c_str());
+		stringstream ss;
+		ss << parsedTokens[3].c_str();
+		ss >> bufferSize;
 		cout << "Buffer size is " << bufferSize << endl;
 	}
 	// for (int i = 0; i < 5; i++) {

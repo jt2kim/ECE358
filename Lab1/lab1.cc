@@ -89,3 +89,11 @@ void computePerformances() {
 	
 }
 
+
+Packet::getStartTick(){
+    return this->startTick;
+}
+
+Packet::Packet(double start){
+    this->startTick = start;
+}

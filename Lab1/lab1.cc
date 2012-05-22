@@ -9,10 +9,10 @@ using namespace std;
 extern "C" {
 	#include "RandomForLab1.h"
 }
-queue<int> buffer;
+queue<Packet *> buffer;
 list<int> averageInQueue;
 list<double> averageDelay;
-list<int> averageIdleTime;
+list<int> averageIdle;
 int t_arrival;
 int t_departure;
 int bufferSize = -1;
@@ -76,6 +76,7 @@ int main(int argc, char* argv[]) {
 
     startSimulation(ticks);
     computePerformances();
+    cout << "done" <<endl;
 }
 
 void startSimulation(int ticks) {cout<<getAverageOfInts(averageInQueue);
@@ -93,18 +94,18 @@ void startSimulation(int ticks) {cout<<getAverageOfInts(averageInQueue);
 
 int arrival(int t_1, int t_2) {
 	if ( ((t_1 % t_arrival) == 0) || ((t_2 % t_arrival) == 0) ) {
-		cout << "Packet Generated" << endl;
-		cout << "packetIndex value is " << packetIndex << endl;
+		//cout << "Packet Generated" << endl;
+		//cout << "packetIndex value is " << packetIndex << endl;
         
 	    //getSize of the queue, and push to the averageInQueue list
 		averageInQueue.push_front(buffer.size());		
         
 		if (buffer.size() == 0)
-			averageIdleTime.push_front(idleTime);		
+			averageIdle.push_front(idleTime);		
         
 		//If buffer is not full, add packet to buffer
 		if (buffer.size() != bufferSize)
-			buffer.push(packetIndex);
+			buffer.push(new Packet((double)t_1*(double)t_2));
                 
 	}
 	packetIndex++;
@@ -120,11 +121,14 @@ int departure (int t_1, int t_2) {
         if( (t_1 % t_departure) == 0 || (t_2 % t_departure) == 0 )
         {
             averageInQueue.push_back(queueSize);
+            Packet* packet = buffer.front();
+            averageDelay.push_back( (double)t_1*(double)t_2 - packet->getStartTick());
             buffer.pop();
+            delete [] packet;
             if(buffer.size() == 0)                
                 idleTime = 0;
                 
-            cout << "Packed popped."<< endl;
+            //cout << "Packed popped."<< endl;
         }        
     }
 
@@ -132,8 +136,8 @@ int departure (int t_1, int t_2) {
 
 void computePerformances() {
 	double averageSizeOfQueue = getAverageOfInts(averageInQueue);
-    double averageDelay = getAverageOfDoubles(averageDelay);
-    double averageIdle = getAverageOfDoubles(averageIdleTime);
+    double averageDelayTime = getAverageOfDoubles(averageDelay);
+    double averageIdleTime = getAverageOfInts(averageIdle);
 }
 
 

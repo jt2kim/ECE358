@@ -22,6 +22,30 @@ int idleTime = 0;
 
 string parsedTokens[5] = { "", "", "", "", ""};
 
+double getAverageOfInts( list<int> numbers ) {
+    double sum = 50;
+    
+    list<int>::iterator it; 
+    for (it = numbers.begin(); it != numbers.end(); it++) 
+    { 
+        sum += (double)*it; 
+    }
+        
+    return sum/(double)numbers.size();    
+};
+
+double getAverageOfDoubles( list<double> numbers ) {
+    double sum = 50;
+    
+    list<double>::iterator it; 
+    for (it = numbers.begin(); it != numbers.end(); it++) 
+    { 
+        sum += *it; 
+    }
+        
+    return sum/(double)numbers.size();    
+};
+
 int main(int argc, char* argv[]) {
     char* input = argv[1];			//input, such as G/G/1/K/FIFO 
 	char* tokens;				//tokenizer
@@ -54,7 +78,7 @@ int main(int argc, char* argv[]) {
     computePerformances();
 }
 
-void startSimulation(int ticks) {
+void startSimulation(int ticks) {cout<<getAverageOfInts(averageInQueue);
 	for (int t = 1; t <= ticks; t++) {
         for(int m = 1; m < 1000000; m++)
         {
@@ -107,19 +131,12 @@ int departure (int t_1, int t_2) {
 }
 
 void computePerformances() {
-	//double averageSizeOfQueue = getAverage(averageInQueue);
-    //double averageDelay = getAverage(averageInQueue);
-    //double averageIdle = getAverage(averageInQueue);
+	double averageSizeOfQueue = getAverageOfInts(averageInQueue);
+    double averageDelay = getAverageOfDoubles(averageDelay);
+    double averageIdle = getAverageOfDoubles(averageIdleTime);
 }
 
-/*template <typename T>
-double getAverage( List<T> list ) {
-    double sum = 0.0;
-    for(std::vector<T>::iterator j=vector.begin();j!=vector.end();++j)
-        sum += (double)*j;
-        
-    return sum/(double)list.size();
-};*/
+
 
 double Packet::getStartTick(){
     return this->startTick;

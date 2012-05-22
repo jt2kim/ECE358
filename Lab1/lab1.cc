@@ -10,20 +10,22 @@ extern "C" {
 queue<int> buffer;
 list<int> averageInQueue;
 list<double> averageDelay;
-list<double> averageIdleTime;
+list<int> averageIdleTime;
 int t_arrival;
 int t_departure;
 int bufferSize = -1;
 int ticks = 100;
 int packetIndex = 0;
+int idleTime = 0;
+
 string parsedTokens[5] = { "", "", "", "", ""};
 
 int main(int argc, char* argv[]) {
     char* input = argv[1];			//input, such as G/G/1/K/FIFO 
-	char* tokens;					//tokenizer
+	char* tokens;				//tokenizer
 	
 	int tokenIndex = 0;
-	tokens = strtok(input, "/");	// tokenize
+	tokens = strtok(input, "/");		// tokenize
 
 	parsedTokens[0] = tokens; 		// first input, such as, G
 	
@@ -50,8 +52,8 @@ int main(int argc, char* argv[]) {
 
 void startSimulation(int ticks) {
 	for (int t = 1; t <= ticks; t++) {
-    //if buffer empty
-       /// idle += 1.0
+		if (buffer.size() == 0)
+			idleTime++;
 		arrival(t);
 		departure(t);
 	}
@@ -63,14 +65,15 @@ int arrival(int t) {
 		cout << "Packet Generated" << endl;
 		cout << "packetIndex value is " << packetIndex << endl;
         
-        //getSize of the queue, and push to the averageInQueue list
+	    //getSize of the queue, and push to the averageInQueue list
+		averageInQueue.push_front(buffer.size());		
         
-        //if buffer is currently empty
-            // save the current idle time in a list
+		if (buffer.size() == 0)
+			averageIdleTime.push_front(idleTime);		
         
-			//If buffer is not full, add packet to buffer
-			if (buffer.size() != bufferSize)
-				buffer.push(packetIndex);
+		//If buffer is not full, add packet to buffer
+		if (buffer.size() != bufferSize)
+			buffer.push(packetIndex);
                 
 	}
 	packetIndex++;
@@ -102,7 +105,7 @@ void computePerformances() {
 }
 
 
-Packet::getStartTick(){
+double Packet::getStartTick(){
     return this->startTick;
 }
 

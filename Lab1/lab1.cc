@@ -89,12 +89,12 @@ int departure (int t_1, int t_2) {
         return 0;
     else
     {
-        if( ((t_1 % t_departure) == 0) || ((t_2 % departure) == 0) )
+        if( (t_1 % t_departure) == 0 || (t_2 % departure) == 0 )
         {
             averageInQueue.push_back(queueSize);
             buffer.pop();
             if(buffer.size() == 0)                
-                idle = 0;
+                idleTime = 0;
                 
             cout << "Packed popped."<< endl;
         }        
@@ -102,20 +102,20 @@ int departure (int t_1, int t_2) {
 
 }
 
+template <typename T>;
+double getAverage( List<T> list ) {
+	double sum = 0.0;
+    for(std::vector<T>::iterator j = vector.begin(); j != vector.end();++j)
+			sum += (double)*j;
+        
+    return sum/(double)list.size();
+};
+
 void computePerformances() {
 	double averageSizeOfQueue = getAverage(averageInQueue);
     double averageDelay = getAverage(averageInQueue);
     double averageIdle = getAverage(averageInQueue);
 }
-
-template <typename T>
-double getAverage( List<T> list ) {
-double sum = 0.0;
-    for(std::vector<T>::iterator j=vector.begin();j!=vector.end();++j)
-        sum += (double)*j;
-        
-    return sum/(double)list.size();
-};
 
 double Packet::getStartTick(){
     return this->startTick;

@@ -60,8 +60,8 @@ void startSimulation(int ticks) {
 	
 }
 
-int arrival(int t) {
-	if (t % t_arrival == 0) {
+int arrival(int t_1, int t_2) {
+	if ( ((t_1 % t_arrival) == 0) || ((t_2 % t_arrival) == 0) ) {
 		cout << "Packet Generated" << endl;
 		cout << "packetIndex value is " << packetIndex << endl;
         
@@ -80,13 +80,13 @@ int arrival(int t) {
 		
 }
 
-int departure (int t) {
+int departure (int t_1, int t_2) {
     int queueSize = buffer.size();
     if(queueSize == 0)
         return 0;
     else
     {
-        if( (t % t_departure) == 0)
+        if( ((t_1 % t_departure) == 0) || ((t_2 % departure) == 0) )
         {
             averageInQueue.push_back(queueSize);
             buffer.pop();

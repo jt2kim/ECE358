@@ -14,7 +14,7 @@ list<int> averageIdleTime;
 int t_arrival;
 int t_departure;
 int bufferSize = -1;
-int ticks = 100;
+int ticks = 5000;
 int packetIndex = 0;
 int idleTime = 0;
 
@@ -52,10 +52,13 @@ int main(int argc, char* argv[]) {
 
 void startSimulation(int ticks) {
 	for (int t = 1; t <= ticks; t++) {
-		if (buffer.size() == 0)
-			idleTime++;
-		arrival(t);
-		departure(t);
+        for(int m = 1; m < 1000000; m++)
+        {
+            if (buffer.size() == 0)
+                idleTime++;
+            arrival(t,m);
+            departure(t,m);
+        }
 	}
 	
 }

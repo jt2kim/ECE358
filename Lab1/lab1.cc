@@ -1,5 +1,6 @@
 #include "lab1.h"
 #include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -12,11 +13,33 @@ list<double> averageDelay;
 list<double> averageIdleTime;
 int t_arrival;
 int t_departure;
-int bufferSize;
+int bufferSize = -1;
 int ticks = 100;
-int i = 0;
-int main() {
-    /* Initialization */
+int packetIndex = 0;
+string parsedTokens[5] = { "", "", "", "", ""};
+
+int main(int argc, char* argv[]) {
+    char* input = argv[1];			//input, such as G/G/1/K/FIFO 
+	char* tokens;					//tokenizer
+	
+	int tokenIndex = 0;
+	tokens = strtok(input, "/");	// tokenize
+
+	parsedTokens[0] = tokens; 		// first input, such as, G
+	
+	for (int a = 1; a < 5; a++) {
+		tokens = strtok(NULL, "/");
+		parsedTokens[a] = tokens;
+	}
+	
+	if (parsedTokens[3] != "") {
+		bufferSize = atoi(parsedTokens[3].c_str());
+		cout << "Buffer size is " << bufferSize << endl;
+	}
+	// for (int i = 0; i < 5; i++) {
+		// cout << parsedTokens[i] << endl;
+	// }
+	
     sgenrand(4357);
     t_arrival = int(genrand() * 10);
     t_departure = t_arrival;
@@ -34,13 +57,14 @@ void startSimulation(int ticks) {
 }
 
 int arrival(int t) {
-	i++;
 	if (t % t_arrival == 0) {
 		cout << "Packet Generated" << endl;
-		cout << "i value is " << i << endl;
-        buffer.push(i);
+		cout << "packetIndex value is " << packetIndex << endl;
+			//If buffer is not full, add packet to buffer
+			if (buffer.size() != bufferSize)
+				buffer.push(packetIndex);
 	}
-	
+	packetIndex++;
 		
 }
 
@@ -54,7 +78,7 @@ int departure (int t) {
         {
             averageInQueue.push_back(queueSize);
             buffer.pop();
-            cout << "packed popped"<<endl;
+            cout << "Packed popped."<< endl;
         }        
     }
 

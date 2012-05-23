@@ -111,8 +111,13 @@ int arrival(int t_1, int t_2) {
 	    //getSize of the queue, and push to the averageInQueue list
 		//averageInQueue.push_front(buffer.size());		
         
-		//if (buffer.size() == 0)
+		if (buffer.size() == 0)
+        {
+            runningIdleSizeSum+= idleTime;
+            idleSizeCtr++;
+        }
 		//	averageIdle.push_front(idleTime);		
+        
         
 		//If buffer is not full, add packet to buffer
 		if (buffer.size() != bufferSize)
@@ -158,6 +163,7 @@ void computePerformances() {
 	//double averageSizeOfQueue = getAverageOfInts(averageInQueue);
     cout << "average size of queue is " << runningQueueSizeSum/queueSizeCtr << endl;
     cout << "average delay is " << runningDelaySizeSum/delaySizeCtr << endl;
+    cout << "average idle time is " << runningIdleSizeSum/idleSizeCtr << endl;
     //double averageDelayTime = getAverageOfDoubles(averageDelay);
     //double averageIdleTime = getAverageOfInts(averageIdle);
 }

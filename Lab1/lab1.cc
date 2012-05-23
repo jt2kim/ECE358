@@ -9,7 +9,7 @@ using namespace std;
 extern "C" {
 	#include "RandomForLab1.h"
 }
-queue<Packet *> buffer;
+queue<double> buffer;
 list<int> averageInQueue;
 list<double> averageDelay;
 list<int> averageIdle;
@@ -19,6 +19,15 @@ int bufferSize = -1;
 int ticks = 5000;
 int packetIndex = 0;
 int idleTime = 0;
+
+long long runningQueueSizeSum = 0;
+long queueSizeCtr = 0;
+
+long long runningDelaySizeSum = 0;
+long delaySizeCtr = 0;
+
+long long runningIdleSizeSum = 0;
+long idleSizeCtr = 0;
 
 string parsedTokens[5] = { "", "", "", "", ""};
 
@@ -108,7 +117,8 @@ int arrival(int t_1, int t_2) {
 		//If buffer is not full, add packet to buffer
 		if (buffer.size() != bufferSize)
         {
-	        buffer.push(new Packet( (double)(t_1-1)*1000000.00 + (double)t_2 ));
+	        //buffer.push(new Packet( (double)(t_1-1)*1000000.00 + (double)t_2 ));
+            buffer.push( (double)(t_1-1)*1000000.00 + (double)t_2 );
         }
  
 	}
@@ -124,11 +134,17 @@ int departure (int t_1, int t_2) {
     {
         if( (t_1 % t_departure) == 0 || (t_2 % t_departure) == 0 )
         {
+        //cout <<buffer.size() << endl;
             //averageInQueue.push_back(queueSize);
+            runningQueueSizeSum += (double)queueSize;
+            queueSizeCtr += 1;
             //Packet* packet = buffer.front();
+            double enterTick = buffer.front();
+            runningDelaySizeSum +=  (t_1-1)*1000000 + t_2;
+            delaySizeCtr += 1;
             //averageDelay.push_back( (double)(t_1-1)*1000000.00 + (double)t_2 - packet->getStartTick());
             buffer.pop();
-            //delete [] packet;
+            //delete packet;
             if(buffer.size() == 0)                
                 idleTime = 0;
                 
@@ -140,6 +156,8 @@ int departure (int t_1, int t_2) {
 
 void computePerformances() {
 	//double averageSizeOfQueue = getAverageOfInts(averageInQueue);
+    cout << "average size of queue is " << runningQueueSizeSum/queueSizeCtr << endl;
+    cout << "average delay is " << runningDelaySizeSum/delaySizeCtr << endl;
     //double averageDelayTime = getAverageOfDoubles(averageDelay);
     //double averageIdleTime = getAverageOfInts(averageIdle);
 }

@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
 	// }
 	
     sgenrand(4357);
-    t_arrival = int(genrand() * 10);
+    t_arrival = (int)(genrand() * 1000000);
     t_departure = t_arrival;
 
     startSimulation(ticks);
@@ -67,7 +67,7 @@ void startSimulation(int ticks) {
 }
 
 int arrival(int t_1, int t_2) {
-	if ( ((t_1 % t_arrival) == 0) || ((t_2 % t_arrival) == 0) ) {
+	if ( t_arrival != 0 && ((t_1 % t_arrival) == 0) || ((t_2 % t_arrival) == 0) ) {
 		//cout << "Packet Generated" << endl;
 		//cout << "packetIndex value is " << packetIndex << endl;
         
@@ -89,7 +89,7 @@ int arrival(int t_1, int t_2) {
             buffer.push( (double)(t_1-1)*1000000.00 + (double)t_2 );
 			idleTime = 0;
         }
- 
+		t_arrival = (int)(genrand() * 1000000);
 	}
 	packetIndex++;
 		

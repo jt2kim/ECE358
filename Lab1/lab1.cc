@@ -1,7 +1,6 @@
 #include "lab1.h"
 #include <iostream>
 #include <string>
-#include <cstring>
 #include <sstream>
 
 using namespace std;
@@ -29,52 +28,15 @@ long delaySizeCtr = 0;
 long long runningIdleSizeSum = 0;
 long idleSizeCtr = 0;
 
-string parsedTokens[5] = { "", "", "", "", ""};
-
-double getAverageOfInts( list<int> numbers ) {
-    double sum = 50;
-    
-    list<int>::iterator it; 
-    for (it = numbers.begin(); it != numbers.end(); it++) 
-    { 
-        sum += (double)*it; 
-    }
-        
-    return sum/(double)numbers.size();    
-};
-
-double getAverageOfDoubles( list<double> numbers ) {
-    double sum = 50;
-    
-    list<double>::iterator it; 
-    for (it = numbers.begin(); it != numbers.end(); it++) 
-    { 
-        sum += *it; 
-    }
-        
-    return sum/(double)numbers.size();    
-};
-
 int main(int argc, char* argv[]) {
-    char* input = argv[1];			//input, such as G/G/1/K/FIFO 
-	char* tokens;				//tokenizer
-	
-	int tokenIndex = 0;
-	tokens = strtok(input, "/");		// tokenize
+    char* input = argv[1];				//input, such as G/G/1/K/FIFO 
+	string bufferS(input);
 
-	parsedTokens[0] = tokens; 		// first input, such as, G
-	
-	for (int a = 1; a < 5; a++) {
-		tokens = strtok(NULL, "/");
-		parsedTokens[a] = tokens;
-	}
-	
-	if (parsedTokens[3] != "") {
-		stringstream ss;
-		ss << parsedTokens[3].c_str();
+	if (bufferS.size() > 5) {
+		istringstream ss(bufferS.substr(6));
 		ss >> bufferSize;
-		cout << "Buffer size is " << bufferSize << endl;
 	}
+
 	// for (int i = 0; i < 5; i++) {
 		// cout << parsedTokens[i] << endl;
 	// }
@@ -88,13 +50,14 @@ int main(int argc, char* argv[]) {
     cout << "done" <<endl;
 }
 
-void startSimulation(int ticks) {cout<<getAverageOfInts(averageInQueue);
+void startSimulation(int ticks) {
 	for (int t = 1; t <= ticks; t++) {
         for(int m = 1; m <= 1000000; m++)
         {
         //cout << (double)(t-1)*1000000.00 + (double)m << endl;
-            if (buffer.size() == 0)
+            if (buffer.size() == 0) {
                 idleTime++;
+			}
             arrival(t,m);
             departure(t,m);
         }
@@ -113,7 +76,7 @@ int arrival(int t_1, int t_2) {
         
 		if (buffer.size() == 0)
         {
-            runningIdleSizeSum+= idleTime;
+            runningIdleSizeSum += idleTime;
             idleSizeCtr++;
         }
 		//	averageIdle.push_front(idleTime);		
@@ -124,6 +87,7 @@ int arrival(int t_1, int t_2) {
         {
 	        //buffer.push(new Packet( (double)(t_1-1)*1000000.00 + (double)t_2 ));
             buffer.push( (double)(t_1-1)*1000000.00 + (double)t_2 );
+			idleTime = 0;
         }
  
 	}
@@ -149,9 +113,6 @@ int departure (int t_1, int t_2) {
             delaySizeCtr += 1;
             //averageDelay.push_back( (double)(t_1-1)*1000000.00 + (double)t_2 - packet->getStartTick());
             buffer.pop();
-            //delete packet;
-            if(buffer.size() == 0)                
-                idleTime = 0;
                 
             //cout << "Packed popped."<< endl;
         }        

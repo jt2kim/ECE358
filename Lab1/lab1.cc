@@ -1,5 +1,5 @@
 #include "lab1.h"
-#include <stringstream>
+#include <sstream>
 #include <iostream>
 #include <string>
 
@@ -60,6 +60,7 @@ void startSimulation(int ticks) {
 			if (buffer.size() == 0) {
 				idleTime++;
 			}
+            t_arrival--;
 			arrival(t,m);
 			departure(t,m);
 		}
@@ -71,24 +72,24 @@ void startSimulation(int ticks) {
 
 int arrival(int t_1, int t_2) {
 	// Check if we have randomly generated arrival time has passed
-	if ( ((t_1 % t_arrival) == 0) || ((t_2 % t_arrival) == 0) ) {
+	//if ( ((t_1 % t_arrival) == 0) || ((t_2 % t_arrival) == 0) ) {
+    if(t_arrival <= 0 ){
 		if (buffer.size() == 0)
 		{
 			runningIdleSizeSum += idleTime;
 			idleSizeCtr++;
-		}
-
+		}            
 		// If buffer is not full, add packet to buffer
-		else {
+		if ( (bufferSize == -1) || (bufferSize > buffer.size()) ) {
 			buffer.push( (double)(t_1 - 1)*1000000.00 + (double)t_2 );
 			
 			// Since buffer is no longer idle, set idleTime to 0
-			idleTime = 0;
-			
-			// Generate a new arrival time for package
-			t_arrival = (int)(genrand() * 1000000);
+			idleTime = 0;			
 		}
-
+        
+        // Generate a new arrival time for package
+	    t_arrival = (int)(genrand() * 1000000);
+    }
 }
 
 int departure (int t_1, int t_2) {
@@ -97,11 +98,12 @@ int departure (int t_1, int t_2) {
 	
 	// If buffer is empty, do nothing
 	if(queueSize == 0)
+
 		return 0;
 		
 	// If buffer is not empty	
 	else
-	{	
+	{
 		// Check that set departure time has passed
 		if( (t_1 % t_departure) == 0 || (t_2 % t_departure) == 0 )
 		{
@@ -110,8 +112,9 @@ int departure (int t_1, int t_2) {
 			buffer.pop();
 			
 			// Check queue size and add up its value
-			runningQueueSizeSum += (double)(queueSize - 1);
+			runningQueueSizeSum += (double)(queueSize - 1);            
 			queueSizeCtr += 1;
+
 
 			// Get arrival time of packetBeingServiced
 			double enterTick = packetBeingServiced;
@@ -124,6 +127,7 @@ int departure (int t_1, int t_2) {
 }
 
 void computePerformances() {
+cout << queueSizeCtr << "    lol" <<endl;
 	cout << "Average Size of Queue is :    " << runningQueueSizeSum/queueSizeCtr << endl;
 	cout << "Average Delay is         :    " << runningDelaySizeSum/delaySizeCtr << endl;
 	cout << "Average Idle time is     :    " << runningIdleSizeSum/idleSizeCtr << endl;

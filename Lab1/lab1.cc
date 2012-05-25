@@ -72,8 +72,6 @@ void startSimulation(int ticks) {
 int arrival(int t_1, int t_2) {
 	// Check if we have randomly generated arrival time has passed
 	if ( ((t_1 % t_arrival) == 0) || ((t_2 % t_arrival) == 0) ) {
-
-		// If buffer is empty, sum  up the idleTime and increment idleTimeCounter
 		if (buffer.size() == 0)
 		{
 			runningIdleSizeSum += idleTime;
@@ -86,9 +84,10 @@ int arrival(int t_1, int t_2) {
 			
 			// Since buffer is no longer idle, set idleTime to 0
 			idleTime = 0;
+			
+			// Generate a new arrival time for package
+			t_arrival = (int)(genrand() * 1000000);
 		}
-
-	}
 
 }
 
@@ -125,20 +124,7 @@ int departure (int t_1, int t_2) {
 }
 
 void computePerformances() {
-	//double averageSizeOfQueue = getAverageOfInts(averageInQueue);
-	cout << "average size of queue is " << runningQueueSizeSum/queueSizeCtr << endl;
-	cout << "average delay is " << runningDelaySizeSum/delaySizeCtr << endl;
-	cout << "average idle time is " << runningIdleSizeSum/idleSizeCtr << endl;
-	//double averageDelayTime = getAverageOfDoubles(averageDelay);
-	//double averageIdleTime = getAverageOfInts(averageIdle);
-}
-
-
-
-double Packet::getStartTick(){
-	return this->startTick;
-}
-
-Packet::Packet(double start){
-	this->startTick = start;
+	cout << "Average Size of Queue is :    " << runningQueueSizeSum/queueSizeCtr << endl;
+	cout << "Average Delay is         :    " << runningDelaySizeSum/delaySizeCtr << endl;
+	cout << "Average Idle time is     :    " << runningIdleSizeSum/idleSizeCtr << endl;
 }

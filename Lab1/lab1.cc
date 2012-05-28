@@ -11,6 +11,7 @@ extern "C" {
 queue<double> buffer;
 int t_arrival;
 int t_departure;
+int t_leave;
 int bufferSize = -1;
 int ticks = 5000;
 int idleTime = 0;
@@ -44,6 +45,7 @@ int main(int argc, char* argv[]) {
 	// Randomly generate arrival time
 	t_arrival = int(genrand() * 1000000);
 	t_departure = t_arrival;
+    t_leave = t_departure;
 
 	startSimulation(ticks);
 	computePerformances();
@@ -53,7 +55,7 @@ int main(int argc, char* argv[]) {
 void startSimulation(int ticks) {
 	// Runs 5 billion times
 	// Two numbers make it easy to store and manage number of runs
-	for (int t = 1; t <= ticks; t++) {
+	for (int t = 1; t < ticks; t++) {
 		for(int m = 1; m <= 1000000; m++)
 		{
 			// If buffer is empty, increment idleTime
@@ -61,6 +63,7 @@ void startSimulation(int ticks) {
 				idleTime++;
 			}
             t_arrival--;
+            t_leave--;
 			arrival(t,m);
 			departure(t,m);
 		}
@@ -81,14 +84,13 @@ int arrival(int t_1, int t_2) {
 		}            
 		// If buffer is not full, add packet to buffer
 		if ( (bufferSize == -1) || (bufferSize > buffer.size()) ) {
-			buffer.push( (double)(t_1 - 1)*1000000.00 + (double)t_2 );
-			
-			// Since buffer is no longer idle, set idleTime to 0
-			idleTime = 0;			
+			buffer.push( (double)(t_1 - 1)*1000000.00 + (double)t_2 );					
 		}
-        
+        // Since buffer is no longer idle, set idleTime to 0
+	    idleTime = 0;	
         // Generate a new arrival time for package
 	    t_arrival = (int)(genrand() * 1000000);
+        
     }
 }
 
@@ -105,7 +107,7 @@ int departure (int t_1, int t_2) {
 	else
 	{
 		// Check that set departure time has passed
-		if( (t_1 % t_departure) == 0 || (t_2 % t_departure) == 0 )
+		if( t_leave <=0 /*(t_1 % t_departure) == 0 || (t_2 % t_departure) == 0 */)
 		{
 			// Remove packet from queue and send to server
 			double packetBeingServiced = buffer.front();
@@ -115,20 +117,18 @@ int departure (int t_1, int t_2) {
 			runningQueueSizeSum += (double)(queueSize - 1);            
 			queueSizeCtr += 1;
 
-
 			// Get arrival time of packetBeingServiced
-			double enterTick = packetBeingServiced;
-			runningDelaySizeSum +=  (t_1 - 1)*1000000 + t_2;
+			runningDelaySizeSum +=  ( (double)(t_1 - 1)*1000000.0 + (double)t_2 ) - packetBeingServiced;
 			delaySizeCtr += 1;
-
+            t_leave = t_departure;
 		}        
 	}
 
 }
 
 void computePerformances() {
-cout << queueSizeCtr << "    lol" <<endl;
-	cout << "Average Size of Queue is :    " << runningQueueSizeSum/queueSizeCtr << endl;
+cout << queueSizeCtr << "    lol     " << runningQueueSizeSum<<endl;
+	cout << "Average Size of Queue is :    " << runningQueueSizeSum/(double)queueSizeCtr << endl;
 	cout << "Average Delay is         :    " << runningDelaySizeSum/delaySizeCtr << endl;
 	cout << "Average Idle time is     :    " << runningIdleSizeSum/idleSizeCtr << endl;
 }

@@ -15,6 +15,11 @@ int t_leave;
 int bufferSize = -1;
 int ticks = 5000;
 int idleTime = 0;
+long seedCtr = 0;
+
+int lambda = -1;
+int L = -1;
+int C = -1;
 
 long long runningQueueSizeSum = 0;
 long queueSizeCtr = 0;
@@ -25,19 +30,41 @@ long delaySizeCtr = 0;
 long long runningIdleSizeSum = 0;
 long idleSizeCtr = 0;
 
-int main(int argc, char* argv[]) {
-	// Get input
-	char* input = argv[1];
+long long packetsGenerated = 0;
+long packetSeconds = 0; // just using ticks for now
 
-	// Conver char* to string
-	string bufferS(input);
+int strToInt (const string &str) {
+	stringstream ss(str);
+	int n;
+	ss >> n;
+	return n;
+}
+
+int main(int argc, char* argv[]) {
+	// Get input in the format M/D/1 n lambda L C
+	string queueType(argv[1]);		// M/D/1 or M/D/1/K
+	string ticksString(argv[2]);				// n
+	string lambdaString(argv[3]);			// lambda
+	string LString(argv[4]);				// L
+	string CString(argv[5]);				// C
 
 	// Check if input is of type M/D/1 or M/D/1/K
-	if (bufferS.size() > 5) {
+	istringstream ss;
+	if (queueType.size() > 5) {
 		// If its of type M/D/1/K, read in and update bufferSize
-		istringstream ss(bufferS.substr(6));
-		ss >> bufferSize;
+		bufferSize = strToInt(queueType.substr(6));
 	}
+	
+	// Convert n, lambda, L, C to int values
+	ticks = strToInt(ticksString);
+	lambda = strToInt(lambdaString);
+	L = strToInt(LString);
+	C = strToInt(CString);
+	
+	cout << "ticks " << ticks << endl;
+	cout << "lambda " << lambda << endl;
+	cout << "L " << L << endl;
+	cout << "C " << C << endl;
 
 	// Seed random number generator
 	sgenrand(4357);
@@ -68,7 +95,7 @@ void startSimulation(int ticks) {
 			departure(t,m);
 		}
 		// Each t is worth a 1000000
-		cout << t << endl;
+		//cout << t << endl;
 	}
 
 }
@@ -77,6 +104,10 @@ int arrival(int t_1, int t_2) {
 	// Check if we have randomly generated arrival time has passed
 	//if ( ((t_1 % t_arrival) == 0) || ((t_2 % t_arrival) == 0) ) {
     if(t_arrival <= 0 ){
+		
+		// To calculate lambda
+		packetsGenerated++;
+		
 		if (buffer.size() == 0)
 		{
 			runningIdleSizeSum += idleTime;
@@ -88,9 +119,13 @@ int arrival(int t_1, int t_2) {
 		}
         // Since buffer is no longer idle, set idleTime to 0
 	    idleTime = 0;	
+	    
+	    // Use a new seed everytime - verified working
+	    sgenrand(seedCtr);
+	    
         // Generate a new arrival time for package
 	    t_arrival = (int)(genrand() * 1000000);
-        
+	    seedCtr++;       
     }
 }
 
@@ -131,4 +166,5 @@ cout << queueSizeCtr << "    lol     " << runningQueueSizeSum<<endl;
 	cout << "Average Size of Queue is :    " << runningQueueSizeSum/(double)queueSizeCtr << endl;
 	cout << "Average Delay is         :    " << runningDelaySizeSum/delaySizeCtr << endl;
 	cout << "Average Idle time is     :    " << runningIdleSizeSum/idleSizeCtr << endl;
+	cout << "Lambda is                :    " << packetsGenerated/ticks; 
 }

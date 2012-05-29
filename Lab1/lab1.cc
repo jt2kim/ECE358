@@ -16,11 +16,20 @@ int transmissionTime;
 int bufferSize = -1;
 int ticks = 6000;
 
-double runningQueueSizeSum = 0;
-double queueSizeCtr = 0;
+double runningQueueSizeSum = 0.0;
+double queueSizeCtr = 0.0;
+
+double runningDelaySizeSum = 0.0;
+double delaySizeCtr = 0.0;
+
+
+double runningIdleSizeSum = 0;
+double idleSizeCtr = 0;
+double idleTime = 0;
 
 double currentlyServing = -1;
 double u;
+
 
 //GET THESE AS USER INPUTS 
 double lambda = 1000;
@@ -82,7 +91,7 @@ void startSimulation(int ticks) {
         
         // Check queue size and add up its value
         runningQueueSizeSum += (double)(buffer.size());       
-        queueSizeCtr += 1;
+        queueSizeCtr += 1.0;
         
 			// If buffer is empty, increment idleTime
 			if (buffer.size() == 0) {
@@ -99,40 +108,30 @@ void startSimulation(int ticks) {
 
 void arrival(double t) {
 	// Check if we have randomly generated arrival time has passed
-	//if ( ((t_1 % t_arrival) == 0) || ((t_2 % t_arrival) == 0) ) {
     t_arrival--;
     if(t_arrival <= 0 ){
 		
         //if buffer is empty and nothing is being served, the packet goes directly to the server
-		if ( (currentlyServing == -1)  && ( buffer.size() == 0) )
-		{
-            currentlyServing = t;
-		}
-
-        //// Since buffer is no longer idle, set idleTime to 0
-	    //idleTime = 0;	
-	    
-	    //// Use a new seed everytime - verified working
-	    //sgenrand(seedCtr);
-	    
-        //// Generate a new arrival time for package
-	    //t_arrival = (int)(genrand() * 1000000);
-	    //seedCtr++;       
-
-        else
+		if( (bufferSize == -1) || (bufferSize > buffer.size()) )
         {
-            // If buffer is not full, add packet to buffer
-            if ( (bufferSize == -1) || (bufferSize > buffer.size()) ) {
-                buffer.push( t );					
+            if(currentlyServing == -1)
+            {
+                currentlyServing = t;
+                t_leave = transmissionTime;
             }
-            // Since buffer is no longer idle, set idleTime to 0
-            //idleTime = 0;	
-            // Generate a new arrival time for package
-            
+            buffer.push(t);
         }
+        
+        runningIdleSizeSum += idleTime;
+        idleSizeCtr += 1.0;
+        
+        idleTime = 0;
+        
+
         u = genrand();
         t_arrival =  (int)((-1/lambda)*log(1-u) * 1000000);
     }
+    
 }
 
 void departure (double t) {
@@ -140,34 +139,33 @@ void departure (double t) {
 	// Store buffer size
 	int queueSize = buffer.size();
 	
-	// If buffer is empty, do nothing
-	//if(queueSize == 0)
-	//	return 0;
-        //increment idle here
-	if(queueSize > 0 )
+    if(queueSize != 0)
     {
-        if ( ( fmod(t , (double)t_departure) <= 0) && (currentlyServing == -1) )
+        if(currentlyServing != -1)
+        {
+            t_leave--;
+            if(t_leave == 0 )
+            {
+                runningDelaySizeSum += t - currentlyServing;
+                delaySizeCtr += 1.0;
+                currentlyServing = -1;
+                buffer.pop();
+            }
+        }
+        else
         {
             currentlyServing = buffer.front();
-            buffer.pop();
-        }
-    }
-    
-    if(currentlyServing != -1)
-    {
-        t_leave--;
-        if( t_leave <= 0 )
-        {            
-            currentlyServing = -1;
             t_leave = transmissionTime;
         }
     }
-
-
+    else
+    {
+        idleTime++;
+    }
 }
 
 void computePerformances() {
 	cout << "Average Size of Queue is :    " << runningQueueSizeSum/queueSizeCtr << endl;
-	//cout << "Average Delay is         :    " << runningDelaySizeSum/delaySizeCtr << endl;
-	//cout << "Average Idle time is     :    " << runningIdleSizeSum/idleSizeCtr << endl;
+	cout << "Average Delay is         :    " << runningDelaySizeSum/delaySizeCtr << endl;
+	cout << "Average Idle time is     :    " << runningIdleSizeSum/idleSizeCtr << endl;
 }

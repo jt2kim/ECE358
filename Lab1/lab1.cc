@@ -22,7 +22,6 @@ double queueSizeCtr = 0.0;
 double runningDelaySizeSum = 0.0;
 double delaySizeCtr = 0.0;
 
-
 double runningIdleSizeSum = 0;
 double idleSizeCtr = 0;
 double idleTime = 0;
@@ -30,13 +29,10 @@ double idleTime = 0;
 double currentlyServing = -1;
 double u;
 
-
 //GET THESE AS USER INPUTS 
 double lambda = 1000;
 double L = 2000;
 double C = 1; 				//Transmission rate of the output link (get it as bits per second but conver to bits per microsecond)
-
-
 
 //Convert str to double
 int strToDbl (const string &str) {
@@ -127,7 +123,7 @@ void arrival(double t) {
         
         idleTime = 0;
         
-
+		sgenrand(t);
         u = genrand();
         t_arrival =  (int)((-1/lambda)*log(1-u) * 1000000);
     }

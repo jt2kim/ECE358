@@ -14,7 +14,7 @@ int t_departure;
 int t_leave;
 int transmissionTime;
 int bufferSize = -1;
-int ticks = 6000;
+int ticks = 5000;
 
 double runningQueueSizeSum = 0.0;
 double queueSizeCtr = 0.0;
@@ -123,7 +123,6 @@ void arrival(double t) {
         
         idleTime = 0;
         
-		sgenrand(t);
         u = genrand();
         t_arrival =  (int)((-1/lambda)*log(1-u) * 1000000);
     }

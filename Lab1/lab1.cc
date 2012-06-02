@@ -11,7 +11,7 @@ extern "C" {
 queue<double> buffer;
 int t_arrival;
 int t_departure;
-int t_leave;
+
 int transmissionTime;
 int bufferSize = -1;
 int ticks = 5000;
@@ -72,8 +72,7 @@ int main(int argc, char* argv[]) {
     
 	// Randomly generate arrival time
 	t_arrival = (int)((-1/lambda)*log(1-u) * 1000000);
-	t_departure = t_arrival;
-    t_leave = transmissionTime;
+	t_departure = transmissionTime;
     
 	startSimulation(ticks);
 	computePerformances();
@@ -113,7 +112,7 @@ void arrival(double t) {
             if(currentlyServing == -1)
             {
                 currentlyServing = t;
-                t_leave = transmissionTime;
+                t_departure = transmissionTime;
             }
             buffer.push(t);
         }
@@ -138,8 +137,8 @@ void departure (double t) {
     {
         if(currentlyServing != -1)
         {
-            t_leave--;
-            if(t_leave == 0 )
+            t_departure--;
+            if(t_departure == 0 )
             {
                 runningDelaySizeSum += t - currentlyServing;
                 delaySizeCtr += 1.0;
@@ -150,7 +149,7 @@ void departure (double t) {
         else
         {
             currentlyServing = buffer.front();
-            t_leave = transmissionTime;
+            t_departure = transmissionTime;
         }
     }
     else

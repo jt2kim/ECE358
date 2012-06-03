@@ -29,6 +29,8 @@ double idleTime = 0;
 double currentlyServing = -1;
 double u;
 
+double packetsAdded = 0.0;
+double packetsDropped = 0.0;
 //GET THESE AS USER INPUTS 
 double lambda = 1000;
 double L = 2000;
@@ -56,6 +58,7 @@ int main(int argc, char* argv[]) {
 	if (queueType.size() > 5) {
 		// If its of type M/D/1/K, read in and update bufferSize
 		bufferSize = strToDbl(queueType.substr(6));
+        cout << "K =  " <<bufferSize<<endl;
 	}
 	
 	// Convert n, lambda, L, C to int values
@@ -109,6 +112,11 @@ void arrival(double t) {
                 t_departure = transmissionTime;
             }
             buffer.push(t);
+            packetsAdded += 0;
+        }
+        else
+        {
+            packetsDropped += 1.0;
         }
         
         //Update the running idle size sum
@@ -159,5 +167,10 @@ void departure (double t) {
 }
 
 void computePerformances() {
-	cout << "Outputs,  " << runningQueueSizeSum/queueSizeCtr << ','  << runningDelaySizeSum/delaySizeCtr<< ','<< runningIdleSizeSum/idleSizeCtr<< endl;
+	cout << runningQueueSizeSum/queueSizeCtr << ','  << runningDelaySizeSum/delaySizeCtr<< ','<< runningIdleSizeSum/((double)ticks*1000000);
+    if(bufferSize != -1 )
+    {
+      cout << ',' << (packetsDropped/(packetsAdded+packetsDropped))*100<< endl;
+      }
+    cout <<endl;
 }

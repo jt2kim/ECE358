@@ -87,17 +87,10 @@ void startSimulation(int ticks) {
         // Check queue size and add up its value
         runningQueueSizeSum += (double)(buffer.size());       
         queueSizeCtr += 1.0;
-        
-			// If buffer is empty, increment idleTime
-			if (buffer.size() == 0) {
-				//idleTime++;
-			}            
-            
-			arrival(t);
-			departure(t);
-		
-		// Each t is worth a 1000000
-		//cout << t << endl;
+
+        //call arrival and departure
+        arrival(t);
+        departure(t);
 	}
 }
 
@@ -105,11 +98,12 @@ void arrival(double t) {
 	// Check if we have randomly generated arrival time has passed
     t_arrival--;
     if(t_arrival <= 0 ){
-		
+    
         //if buffer is empty and nothing is being served, the packet goes directly to the server
 		if( (bufferSize == -1) || (bufferSize > buffer.size()) )
         {
-            if(currentlyServing == -1)
+            //If no packet is being served, push a packet to the server
+            if(currentlyServing == -1) 
             {
                 currentlyServing = t;
                 t_departure = transmissionTime;
@@ -117,11 +111,13 @@ void arrival(double t) {
             buffer.push(t);
         }
         
+        //Update the running idle size sum
         runningIdleSizeSum += idleTime;
         idleSizeCtr += 1.0;
         
         idleTime = 0;
         
+        //Generate a new independent random t_arrival time
         u = genrand();
         t_arrival =  (int)((-1/lambda)*log(1-u) * 1000000);
     }
@@ -129,15 +125,18 @@ void arrival(double t) {
 }
 
 void departure (double t) {
-
 	// Store buffer size
 	int queueSize = buffer.size();
 	
+    //If the buffer is not empty, proceed with serving code
     if(queueSize != 0)
     {
+        //If a packet is being served in the server, decrement the serving time counter
         if(currentlyServing != -1)
         {
             t_departure--;
+            //If the predetermined serving time is up, the packet will be removed from the buffer
+            //And the server will be set to empty
             if(t_departure == 0 )
             {
                 runningDelaySizeSum += t - currentlyServing;
@@ -152,6 +151,7 @@ void departure (double t) {
             t_departure = transmissionTime;
         }
     }
+    //If the buffer is empty, increment the idle time
     else
     {
         idleTime++;

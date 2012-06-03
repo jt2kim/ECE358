@@ -76,7 +76,7 @@ int main(int argc, char* argv[]) {
     
 	startSimulation(ticks);
 	computePerformances();
-	cout << "done" << endl;
+	
 }
 
 void startSimulation(int ticks) {    
@@ -159,7 +159,5 @@ void departure (double t) {
 }
 
 void computePerformances() {
-	cout << "Average Size of Queue is :    " << runningQueueSizeSum/queueSizeCtr << endl;
-	cout << "Average Delay is         :    " << runningDelaySizeSum/delaySizeCtr << endl;
-	cout << "Average Idle time is     :    " << runningIdleSizeSum/idleSizeCtr << endl;
+	cout << "Outputs,  " << runningQueueSizeSum/queueSizeCtr << ','  << runningDelaySizeSum/delaySizeCtr<< ','<< runningIdleSizeSum/idleSizeCtr<< endl;
 }

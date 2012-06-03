@@ -1,0 +1,75 @@
+1. The average service time received by a packet is L/C. The utilization
+of the queue can be expressed as (Arrival Rate)/(Service Rate) which is
+equal to (Arrival Rate) * (Service Time) = (λ * L)/C, where Lambda is 
+the arrival rate in Hertz (1 / sec), L is the length of the packet in 
+bits, and C is the bandwidth of the outgoing link in bits/sec.
+
+2. Variables:
+	- queue<double> buffer:
+		The queue used to store the packets
+		
+	- int t_arrival:
+		Time used to calculate when a new packet is generated.
+		
+	- int t_departure:
+		Time used to calculate when a packet is removed from the queue
+		and sent to the server
+		
+	- int t_leave
+	- int transmissionTime
+	- int bufferSize
+	- int ticks
+	- double runningQueueSizeSum
+	- double queueSizeCtr
+	- double runningDelaySizeSum
+	- double delaySizeCtr 
+	- double runningIdleSizeSum 
+	- double idleSizeCtr
+	- double idleTime
+	- double currentlyServing
+	- double u
+	- double lambda 
+	- double L 
+	- double C 
+	- long arrivalCounter 
+	
+ To explain the logic behind the code, lets look at the code in terms of
+ the individual methods:
+	- int main()
+	
+	- void startSimulation (int ticks)
+	
+	- void arrival (double t)
+	
+	- void departure (double t)
+	
+	- void computePerformances()
+	
+3. Based on the given inputs, our code 
+	1. E[N]:  Calculated by adding up the number of packets in the queue
+			  at each tick and dividing it by the total number of packets
+			  generated during the span of the simulation.
+			  
+			  For the given inputs, our code generated an E[N] value of 
+			  0.000100033
+			 
+	2. E[T]:  Calculated by taking the time difference between the arrival
+			  of a packet at the queue and the time at at which it leaves 
+			  the server.
+			 
+			  For the given inputs, our code generated an E[T] value of 
+			  1.00045 microseconds
+			 
+	3. Pidle: Calculated by summing up how many microseconds the queue
+			  has been idle for and dividing it by the total number of times
+			  the summation had been done.
+			  
+			  For the given inputs, our code generated a P_idle value of 
+			  9999.12 microseconds
+	
+4. Since the input to our application is uses λ and not ρ, we can redefine
+   the problems in terms of λ. We know that ρ = (λ * L) / C. Therefore,
+   λ = (ρ * C) / L. Hence, we can express the problem with the three parts
+   in terms of 100 < λ < 475 with a step size of 25 λ.
+   
+   1. 

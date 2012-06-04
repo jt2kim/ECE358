@@ -112,7 +112,7 @@ void arrival(double t) {
                 t_departure = transmissionTime;
             }
             buffer.push(t);
-            packetsAdded += 0;
+            packetsAdded += 1.0;
         }
         else
         {

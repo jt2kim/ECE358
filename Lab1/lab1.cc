@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
 	ticks = strToDbl(ticksString);
 	lambda = strToDbl(lambdaString);
 	L = strToDbl(LString);
-	C = strToDbl(CString);
+	C = strToDbl(CString) / 1000000;
 
 	// Seed random number generator
 	sgenrand(4557);

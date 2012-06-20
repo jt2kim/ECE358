@@ -73,3 +73,11 @@ bits, and C is the bandwidth of the outgoing link in bits/sec.
    in terms of 100 < λ < 475 with a step size of 25 λ.
    
    1. 
+   
+5.
+
+6. For a ρ value of 1.2, we get a λ value of 600, using the same formula
+   as in question 4. Running our program with the given λ value, and other
+   parameters the same as those in question 4, we get:
+   
+   

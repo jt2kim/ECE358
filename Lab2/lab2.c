@@ -12,6 +12,8 @@ double FER;
 int Window_Size;
 int N; /* Total number of packets */
 
+int ext_expected_frame;
+
 void Sender(Event Current_Event) {
 	
 	/* You sender code here */
@@ -20,6 +22,20 @@ void Sender(Event Current_Event) {
 void Receiver(Event Current_Event) {
 	
 	/* Your receiver code here */
+    
+    
+    //RECEIVER CODE FOR ABP
+    
+    //if current_Event packet has an error, or if it is out of order, discard it
+    if ( (Current_Event.Error == 0) || (Current_Event.Seq_Num != ext_expected_frame) )
+        return;
+    //Otherwise, send ACK, and deliver
+    else
+    {
+        //Send ACK
+        Channel( SEND_ACK, Current_Event.Seq_Num, 0, /*time*/ 0.0);
+        Deliver( Current_Event, /*time*/ 0.0);
+    }
 }
 
 
@@ -39,7 +55,7 @@ int main()
 	FER = 0.01;
 	Time_Out = 10;
 	/**********************************************/
-	
+	ext_expected_frame = 0;
 	Initialization();
 	
 	while (Queue_Head != NULL)

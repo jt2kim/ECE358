@@ -55,7 +55,7 @@ void Receiver(Event Current_Event) {
     else
     {
         //Send ACK
-        Channel( SEND_ACK, Current_Event.Seq_Num, 0 /*packet num, supposed to be 0 for ACKs"*/, /*time*/ 0.0);
+        Channel( SEND_ACK, Current_Event.Seq_Num, 0, /*time*/ 0.0);
         Deliver( Current_Event, /*time*/ 0.0);
         
         //Update the ext_expected_frame

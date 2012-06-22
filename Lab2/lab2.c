@@ -16,7 +16,7 @@ int ext_expected_frame;
 
 void Sender(Event Current_Event) {
 	int lastSeqNum = -1;
-	int lastPkt_Num = -1;
+	int lastPktNum = -1;
 	double lastTime = -1.00;
 	
 	// Send packet normally using Channel
@@ -28,7 +28,7 @@ void Sender(Event Current_Event) {
 		Channel(SEND_FRAME, Current_Event.Seq_Num, Current_Event.Pkt_Num, Current_Event.Time);
 	}
 	// If received acknowledgement is corrupted, resend previous frame
-	else if (Current_Event.Tyep == RECEIVE_ACK) {
+	else if (Current_Event.Type == RECEIVE_ACK) {
 		if (Current_Event.Error == 1) {
 			Channel(SEND_FRAME, lastSeqNum, lastPktNum, lastTime);
 		}

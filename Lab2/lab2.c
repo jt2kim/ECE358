@@ -50,11 +50,12 @@ void Receiver(Event Current_Event) {
         last_in_order_frame = ext_expected_frame;
         ext_expected_frame = (ext_expected_frame + 1)%(Window_Size +1);
         
-        Channel( SEND_ACK, Current_Event.Seq_Num, 0 /*packet num, supposed to be 0 for ACKs"*/, /*time*/ 0.0);
-        
+        //Send ACK to sender
+        Channel( SEND_ACK, last_in_order_frame, 0 /*packet num, supposed to be 0 for ACKs"*/, /*time*/ 0.0);
+        Deliver( Current_Event, /*time*/ 0.0);
     }
     
-    //Send ACK to sender
+    
 }
 
 

@@ -16,8 +16,28 @@ int ext_expected_frame = 0;
 int last_in_order_frame = 0;
 
 void Sender(Event Current_Event) {
+	int lastSeqNum = -1;
+	int lastPktNum = -1;
+	double lastTime = -1.00;
 	
-	/* You sender code here */
+	// Send packet normally using Channel
+	if (Current_Event.Type == START_SEND) {
+		lastSeqNum = Current_Event.Seq_Num;
+		lastPktNum = Current_Event.Pkt_Num;
+		lastTime = Current_Event.Time;
+		
+		Channel(SEND_FRAME, Current_Event.Seq_Num, Current_Event.Pkt_Num, Current_Event.Time);
+	}
+	// If received acknowledgement is corrupted, resend previous frame
+	else if (Current_Event.Type == RECEIVE_ACK) {
+		if (Current_Event.Error == 1) {
+			Channel(SEND_FRAME, lastSeqNum, lastPktNum, lastTime);
+		}
+	}
+	// If timeout occurs, resend previous frame
+	else {	//Timeout
+		Channel(SEND_FRAME, lastSeqNum, lastPktNum, lastTime);
+	}
 }
 
 void Receiver(Event Current_Event) {

@@ -19,23 +19,36 @@ void Sender(Event Current_Event) {
 	int lastSeqNum = -1;
 	int lastPktNum = -1;
 	double lastTime = -1.00;
-	
+	int isBufferEmpty = 1;		// On first call, buffer is empty
+	printf("Event Type %d \n", Current_Event.Type);
 	// Send packet normally using Channel
 	if (Current_Event.Type == START_SEND) {
-		lastSeqNum = Current_Event.Seq_Num;
-		lastPktNum = Current_Event.Pkt_Num;
-		lastTime = Current_Event.Time;
-		
-		Channel(SEND_FRAME, Current_Event.Seq_Num, Current_Event.Pkt_Num, Current_Event.Time);
+		if (isBufferEmpty) {		// Check if previous packet was received successfully
+			printf("START_SEND \n");
+			lastSeqNum = Current_Event.Seq_Num;
+			lastPktNum = Current_Event.Pkt_Num;
+			lastTime = Current_Event.Time;
+			isBufferEmpty = 0;
+			Channel(SEND_FRAME, Current_Event.Seq_Num, Current_Event.Pkt_Num, Current_Event.Time);
+		}
 	}
 	// If received acknowledgement is corrupted, resend previous frame
 	else if (Current_Event.Type == RECEIVE_ACK) {
 		if (Current_Event.Error == 1) {
+			printf("RECEIVE_ACK \n");
+			isBufferEmpty = 0;
 			Channel(SEND_FRAME, lastSeqNum, lastPktNum, lastTime);
+		}
+		else {
+			printf("TIMEOUT \n");
+			if (Current_Event.Pkt_Num == lastPktNum) {
+				isBufferEmpty = 1;
+			}		
 		}
 	}
 	// If timeout occurs, resend previous frame
 	else {	//Timeout
+		isBufferEmpty = 0;
 		Channel(SEND_FRAME, lastSeqNum, lastPktNum, lastTime);
 	}
 }
@@ -49,11 +62,14 @@ void Receiver(Event Current_Event) {
     
     //if current_Event packet has an error, or if it is out of order, discard it
     
-    if ( (Current_Event.Error == 1) || (Current_Event.Seq_Num != ext_expected_frame) )
+    if ( (Current_Event.Error == 1) || (Current_Event.Seq_Num != ext_expected_frame) ) {
+		printf("RECEIVED_ERROR \n");
         return;
+     }
     //Otherwise, send ACK, and deliver
     else
     {
+		printf("RECEIVED_SUCCESS \n");
         //Send ACK
         Channel( SEND_ACK, Current_Event.Seq_Num, 0, /*time*/ 0.0);
         Deliver( Current_Event, /*time*/ 0.0);

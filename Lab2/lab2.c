@@ -35,6 +35,9 @@ void Receiver(Event Current_Event) {
         //Send ACK
         Channel( SEND_ACK, Current_Event.Seq_Num, 0, /*time*/ 0.0);
         Deliver( Current_Event, /*time*/ 0.0);
+        
+        //Update the ext_expected_frame
+        ext_expected_frame = ( ext_expected_frame + 1 ) % 1;
     }
 }
 

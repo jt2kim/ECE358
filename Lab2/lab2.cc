@@ -51,6 +51,7 @@ void Sender(Event Current_Event) {
 				if (buffer[i].e.Seq_Num == Current_Event.Seq_Num)
 				{
 					buffer[i].receivedAck = true;
+					break;
 				}
 			}
 			// Go through buffer and remove the first sequential 
@@ -67,9 +68,9 @@ void Sender(Event Current_Event) {
 		printf("TIMEOUT \n");
 		// Retransmit
 		int index = -1;
-		for (vector<pkt>::iterator i = buffer.begin(); i != buffer.end(); i++)
+		for (int i = 0; i < buffer.size(); i++)
 		{
-			if (buffer.at(i).e.Seq_Num == Current_Event.Seq_Num)
+			if (buffer[i].e.Seq_Num == Current_Event.Seq_Num)
 			{
 				index = i;
 			}

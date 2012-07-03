@@ -62,21 +62,21 @@ void Receiver(Event Current_Event) {
     
     //if current_Event packet has an error, or if it is out of order, discard it
     
-    if ( (Current_Event.Error == 1) || (Current_Event.Seq_Num != ext_expected_frame) ) {
-		printf("RECEIVED_ERROR \n");
-        return;
-     }
+    //if ( (Current_Event.Error == 1) || (Current_Event.Seq_Num != ext_expected_frame) ) {
+	//	printf("RECEIVED_ERROR \n");
+    //    return;
+     //}
     //Otherwise, send ACK, and deliver
-    else
-    {
-		printf("RECEIVED_SUCCESS \n");
-        //Send ACK
-        Channel( SEND_ACK, Current_Event.Seq_Num, 0, /*time*/ 0.0);
-        Deliver( Current_Event, /*time*/ 0.0);
+    //else
+    //{
+	//	printf("RECEIVED_SUCCESS \n");
+    //    //Send ACK
+    //    Channel( SEND_ACK, Current_Event.Seq_Num, 0, /*time*/ 0.0);
+    //    Deliver( Current_Event, /*time*/ 0.0);
         
         //Update the ext_expected_frame
-        ext_expected_frame = ( ext_expected_frame + 1 ) % 1;
-    }
+    //    ext_expected_frame = ( ext_expected_frame + 1 ) % 1;
+   // }
     
     //RECEIVER CODE FOR GBN
     //If there is no error, and the frame is the expected frame
@@ -90,9 +90,9 @@ void Receiver(Event Current_Event) {
         {
             last_in_order_frame = ext_expected_frame;
             ext_expected_frame = (ext_expected_frame + 1)%(Window_Size +1);
-            Deliver( Current_Event,  0.0);
+            Deliver( Current_Event,  Current_Event.Time);
         }
-        Channel( SEND_ACK, last_in_order_frame, 0 , 0.0);
+        Channel( SEND_ACK, last_in_order_frame, 0 , Current_Event.Time);
     }
     
     /*if ( (Current_Event.Error == 0) && (Current_Event.Seq_Num == ext_expected_frame) )

@@ -81,6 +81,20 @@ void Receiver(Event Current_Event) {
     //RECEIVER CODE FOR GBN
     //If there is no error, and the frame is the expected frame
     //updated the last in order frame number and update the ext_expected_frame
+    
+    //If correctly received
+    if(Current_Event.Error == 0)
+    {
+        //If the frame is in order, update the last in order frame
+        if(Current_Event.Seq_Num == ext_expected_frame)
+        {
+            last_in_order_frame = ext_expected_frame;
+            ext_expected_frame = (ext_expected_frame + 1)%(Window_Size +1);
+            Deliver( Current_Event,  0.0);
+        }
+        Channel( SEND_ACK, last_in_order_frame, 0 , 0.0);
+    }
+    
     /*if ( (Current_Event.Error == 0) && (Current_Event.Seq_Num == ext_expected_frame) )
     {
         last_in_order_frame = ext_expected_frame;

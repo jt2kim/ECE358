@@ -1,3 +1,5 @@
+#ifndef LAB_TWO
+#define LAB_TWO
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -37,3 +39,5 @@ extern "C" void Channel(int Type, int SeqNum, int PktNum, double CTime);
 extern "C" void Deliver(Event Current_Event, double CTime);
 extern "C" void Sender_SRP(Event Current_Event);
 extern "C" void Reciever_SRP(Event Current_Event);
+
+#endif

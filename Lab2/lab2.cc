@@ -1,7 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "lab2.h"
-
+#include <queue>
+using namespace std;
 struct Queue *Queue_Head = NULL;
 double C;
 double A;

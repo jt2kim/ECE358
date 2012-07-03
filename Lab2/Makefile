@@ -1,6 +1,6 @@
 #------------------------------------------------------------------------------
 
-SOURCE= lab2.c
+SOURCE= lab2.cc
 LIB=lab2linux.o
 MYPROGRAM=simulator
 CC=g++

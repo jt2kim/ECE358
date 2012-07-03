@@ -46,7 +46,7 @@ void Sender(Event Current_Event) {
 		}
 		else {
 			// Iterate through vector to find correct packet and mark it acknowledged
-			for (vector<pkt>::iterator i = buffer.begin(); i != buffer.end(); i++)
+			for (int i = 0; i < buffer.size(); i++)
 			{
 				if (buffer[i].e.Seq_Num == Current_Event.Seq_Num)
 				{
@@ -55,8 +55,8 @@ void Sender(Event Current_Event) {
 			}
 			// Go through buffer and remove the first sequential 
 			while (buffer.size() != 0) {
-				if (buffer.get(0).receivedAck) {
-					buffer.remove(0);
+				if (buffer.at(0).receivedAck) {
+					buffer.erase(buffer.begin());
 				}
 				else
 					break;
@@ -69,7 +69,7 @@ void Sender(Event Current_Event) {
 		int index = -1;
 		for (vector<pkt>::iterator i = buffer.begin(); i != buffer.end(); i++)
 		{
-			if (buffer[i].e.Seq_Num == Current_Event.Seq_Num)
+			if (buffer.at(i).e.Seq_Num == Current_Event.Seq_Num)
 			{
 				index = i;
 			}

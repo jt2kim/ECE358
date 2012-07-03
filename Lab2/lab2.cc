@@ -1,5 +1,8 @@
 #include "lab2.h"
 #include <queue>
+#include <vector>
+#include <iostream>
+
 using namespace std;
 struct Queue *Queue_Head = NULL;
 double C;
@@ -10,45 +13,70 @@ double Time_Out;
 double FER;
 int Window_Size;
 int N; /* Total number of packets */
+int *P = NULL;
+
+
+struct pkt {
+	Event e;
+	bool receivedAck;
+};
+
+vector<pkt> buffer;	// Buffer to keep track of acks
 
 int ext_expected_frame = 0;
 int last_in_order_frame = 0;
 
 void Sender(Event Current_Event) {
-	int lastSeqNum = -1;
-	int lastPktNum = -1;
-	double lastTime = -1.00;
-	int isBufferEmpty = 1;		// On first call, buffer is empty
-	printf("Event Type %d \n", Current_Event.Type);
-	// Send packet normally using Channel
+	int lowestAcked = -1;
 	if (Current_Event.Type == START_SEND) {
-		if (isBufferEmpty) {		// Check if previous packet was received successfully
+		if (buffer.size() < Window_Size) {
+			// Do something
 			printf("START_SEND \n");
-			lastSeqNum = Current_Event.Seq_Num;
-			lastPktNum = Current_Event.Pkt_Num;
-			lastTime = Current_Event.Time;
-			isBufferEmpty = 0;
+			Current_Event.Seq_Num = Current_Event.Pkt_Num % (Window_Size + 1);
+			pkt p;
+			p.e = Current_Event;
+			p.receivedAck = false;
 			Channel(SEND_FRAME, Current_Event.Seq_Num, Current_Event.Pkt_Num, Current_Event.Time);
 		}
 	}
 	// If received acknowledgement is corrupted, resend previous frame
 	else if (Current_Event.Type == RECEIVE_ACK) {
-		if (Current_Event.Error == 1) {
-			printf("RECEIVE_ACK \n");
-			isBufferEmpty = 0;
-			Channel(SEND_FRAME, lastSeqNum, lastPktNum, lastTime);
+		if (Current_Event.Error == 1) {		// Error
+			// Do nothing
 		}
 		else {
-			printf("TIMEOUT \n");
-			if (Current_Event.Pkt_Num == lastPktNum) {
-				isBufferEmpty = 1;
-			}		
+			// Iterate through vector to find correct packet and mark it acknowledged
+			for (vector<pkt>::iterator i = buffer.begin(); i != buffer.end(); i++)
+			{
+				if (buffer[i].e.Seq_Num == Current_Event.Seq_Num)
+				{
+					buffer[i].receivedAck = true;
+				}
+			}
+			// Go through buffer and remove the first sequential 
+			while (buffer.size() != 0) {
+				if (buffer.get(0).receivedAck) {
+					buffer.remove(0);
+				}
+				else
+					break;
+			}			
 		}
 	}
-	// If timeout occurs, resend previous frame
-	else {	//Timeout
-		isBufferEmpty = 0;
-		Channel(SEND_FRAME, lastSeqNum, lastPktNum, lastTime);
+	else {
+		printf("TIMEOUT \n");
+		// Retransmit
+		int index = -1;
+		for (vector<pkt>::iterator i = buffer.begin(); i != buffer.end(); i++)
+		{
+			if (buffer[i].e.Seq_Num == Current_Event.Seq_Num)
+			{
+				index = i;
+			}
+			if (index != -1) {
+				Channel(SEND_FRAME, buffer[i].e.Seq_Num, buffer[i].e.Pkt_Num, buffer[i].e.Time);
+			}
+		}			
 	}
 }
 

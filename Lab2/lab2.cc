@@ -79,7 +79,7 @@ void Sender(Event Current_Event) {
 				index = i;
 			}
 			if (index != -1) {
-				Channel(SEND_FRAME, buffer[i].e.Seq_Num, buffer[i].e.Pkt_Num, buffer[i].e.Time);
+				Channel(SEND_FRAME, buffer[i].e.Seq_Num, buffer[i].e.Pkt_Num, ticks);
 			}
 		}			
 	}
@@ -124,7 +124,7 @@ void Receiver(Event Current_Event) {
             ext_expected_frame = (ext_expected_frame + 1)%(Window_Size +1);
             Deliver( Current_Event,  Current_Event.Time);
         }
-        Channel( SEND_ACK, last_in_order_frame, 0 , Current_Event.Time);
+        Channel( SEND_ACK, last_in_order_frame, 0 , ticks);
     }
     
     
@@ -177,7 +177,7 @@ int main()
 			Print(Current_Event);
 			Receiver(Current_Event);
 		}
-		ticks++;
+		ticks+= 0.000001;
 	}
 	
 	return 0;

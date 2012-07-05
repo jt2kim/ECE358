@@ -13,8 +13,6 @@ double Time_Out;
 double FER;
 int Window_Size;
 int N; /* Total number of packets */
-int *P = NULL;
-double ticks = 0;
 long packetNum = 0;
 
 struct pkt {
@@ -38,7 +36,7 @@ void Sender(Event Current_Event) {
 			pkt p;
 			p.e = Current_Event;
 			p.receivedAck = false;
-			Channel(SEND_FRAME, Current_Event.Seq_Num, Current_Event.Pkt_Num, ticks);
+			Channel(SEND_FRAME, Current_Event.Seq_Num, Current_Event.Pkt_Num, Current_Event.Time);
 			packetNum++; // Increment packet number
 		}
 	}
@@ -69,7 +67,7 @@ void Sender(Event Current_Event) {
 	}
 	else if (Current_Event.Type == TIMEOUT) {
 		printf("TIMEOUT \n");
-		cout << ticks << endl;
+		cout << Current_Event.Time << endl;
 		// Retransmit
 		int index = -1;
 		for (int i = 0; i < buffer.size(); i++)
@@ -79,37 +77,14 @@ void Sender(Event Current_Event) {
 				index = i;
 			}
 			if (index != -1) {
-				Channel(SEND_FRAME, buffer[i].e.Seq_Num, buffer[i].e.Pkt_Num, ticks);
+				Channel(SEND_FRAME, buffer[i].e.Seq_Num, buffer[i].e.Pkt_Num, Current_Event.Time);
 			}
 		}			
 	}
 }
 
 void Receiver(Event Current_Event) {
-	
-	/* Your receiver code here */
-    
-    
-    //RECEIVER CODE FOR ABP
-    
-    //if current_Event packet has an error, or if it is out of order, discard it
-    
-    //if ( (Current_Event.Error == 1) || (Current_Event.Seq_Num != ext_expected_frame) ) {
-	//	printf("RECEIVED_ERROR \n");
-    //    return;
-     //}
-    //Otherwise, send ACK, and deliver
-    //else
-    //{
-	//	printf("RECEIVED_SUCCESS \n");
-    //    //Send ACK
-    //    Channel( SEND_ACK, Current_Event.Seq_Num, 0, /*time*/ 0.0);
-    //    Deliver( Current_Event, /*time*/ 0.0);
-        
-        //Update the ext_expected_frame
-    //    ext_expected_frame = ( ext_expected_frame + 1 ) % 1;
-   // }
-    
+	    
     //RECEIVER CODE FOR GBN
     //If there is no error, and the frame is the expected frame
     //updated the last in order frame number and update the ext_expected_frame
@@ -123,23 +98,11 @@ void Receiver(Event Current_Event) {
             last_in_order_frame = ext_expected_frame;
             ext_expected_frame = (ext_expected_frame + 1)%(Window_Size +1);
             Deliver( Current_Event,  Current_Event.Time);
-			cout << "Received and Acknowledged " << last_in_order_frame + " "  << endl;
+			cout << "Received and Acknowledged " << last_in_order_frame  << endl;
         }
-        Channel( SEND_ACK, last_in_order_frame, 0 , ticks);
-    }
-    
-    
-    /*if ( (Current_Event.Error == 0) && (Current_Event.Seq_Num == ext_expected_frame) )
-    {
-        last_in_order_frame = ext_expected_frame;
-        ext_expected_frame = (ext_expected_frame + 1)%(Window_Size +1);
-        
-        //Send ACK to sender
-        Channel( SEND_ACK, last_in_order_frame, 0 , 0.0);
-        Deliver( Current_Event,  0.0);
-    }*/
-    
-    
+        Channel( SEND_ACK, last_in_order_frame, 0, Current_Event.Time);
+        cout << "Received Packet Number: " << Current_Event.Pkt_Num << endl;
+    }    
 }
 
 
@@ -154,10 +117,10 @@ int main()
 	C = 1000000;			/* bps */
 	L = 1500*8;			/* bits, Avg length of pkts */
 	A = 54*8;			/* bits */
-	Prop_Delay = 50;		/* seconds */
+	Prop_Delay = 0.05;		/* seconds */
 	Window_Size = 5;
 	FER = 0.01;
-	Time_Out = 10;
+	Time_Out = (L/C) + (A/C) + 2*Prop_Delay;
 	/**********************************************/
 	ext_expected_frame = 0;
 	Initialization();
@@ -178,7 +141,6 @@ int main()
 			Print(Current_Event);
 			Receiver(Current_Event);
 		}
-		ticks+= 0.000001;
 	}
 	
 	return 0;

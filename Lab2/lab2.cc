@@ -39,10 +39,12 @@ void Sender(Event Current_Event) {
 				buffer.push_back(p);
 				Channel(SEND_FRAME, Current_Event.Seq_Num, Current_Event.Pkt_Num, Current_Event.Time);
 				packetNum++; // Increment packet number
+                
 			}
 		}
 		// If received acknowledgement is corrupted, resend previous frame
 		else if (Current_Event.Type == RECEIVE_ACK) {
+        cout << "received ack for sequence " << Current_Event.Seq_Num << endl;
 			if (Current_Event.Error == 1) {		// Error
 				// Do nothing
 			}
@@ -86,8 +88,8 @@ void Sender(Event Current_Event) {
 			int index = -1;
 			for (int i = 0; i < buffer.size(); i++)
 			{
-				//cout << "Buffer Size: " << buffer.size() << endl;
-				if (buffer[i].e.Seq_Num == Current_Event.Seq_Num && index == -1)
+				
+				if ( (buffer[i].e.Pkt_Num == Current_Event.Pkt_Num) && (index == -1))
 				{
 					index = i;
 				}
@@ -130,7 +132,7 @@ int main()
 	/**********************************************/
 	/* Remember to change the following variables */
 	
-	N = 15;		
+	N = 10;		
 	C = 1000000;			/* bps */
 	L = 1500*8;			/* bits, Avg length of pkts */
 	A = 54*8;			/* bits */

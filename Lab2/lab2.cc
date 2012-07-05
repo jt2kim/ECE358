@@ -62,11 +62,19 @@ void Sender(Event Current_Event) {
 				}
 				else
 					break;
-			}			
+			}
+            Event New_Event;
+            New_Event.Pkt_Num = packetNum;
+			New_Event.Seq_Num = New_Event.Pkt_Num % (Window_Size + 1);
+			pkt p;
+			p.e = New_Event;
+			p.receivedAck = false;
+			Channel(SEND_FRAME, New_Event.Seq_Num, New_Event.Pkt_Num, Current_Event.Time);
+            packetNum++;
 		}
 	}
 	else if (Current_Event.Type == TIMEOUT) {
-		printf("TIMEOUT \n");
+		
 		cout << Current_Event.Time << endl;
 		// Retransmit
 		int index = -1;
@@ -77,6 +85,7 @@ void Sender(Event Current_Event) {
 				index = i;
 			}
 			if (index != -1) {
+                cout << "TIMEOUT and retransmit: " << buffer[i].e.Pkt_Num << endl;
 				Channel(SEND_FRAME, buffer[i].e.Seq_Num, buffer[i].e.Pkt_Num, Current_Event.Time);
 			}
 		}			

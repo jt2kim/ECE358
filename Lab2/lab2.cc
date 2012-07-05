@@ -14,7 +14,8 @@ double FER;
 int Window_Size;
 int N; /* Total number of packets */
 int *P = NULL;
-
+double ticks = 0;
+long packetNum = 0;
 
 struct pkt {
 	Event e;
@@ -32,11 +33,13 @@ void Sender(Event Current_Event) {
 		if (buffer.size() < Window_Size) {
 			// Do something
 			printf("START_SEND \n");
+			Current_Event.Pkt_Num = packetNum;
 			Current_Event.Seq_Num = Current_Event.Pkt_Num % (Window_Size + 1);
 			pkt p;
 			p.e = Current_Event;
 			p.receivedAck = false;
-			Channel(SEND_FRAME, Current_Event.Seq_Num, Current_Event.Pkt_Num, Current_Event.Time);
+			Channel(SEND_FRAME, Current_Event.Seq_Num, Current_Event.Pkt_Num, ticks);
+			packetNum++; // Increment packet number
 		}
 	}
 	// If received acknowledgement is corrupted, resend previous frame
@@ -64,8 +67,9 @@ void Sender(Event Current_Event) {
 			}			
 		}
 	}
-	else {
+	else if (Current_Event.Type == TIMEOUT) {
 		printf("TIMEOUT \n");
+		cout << ticks << endl;
 		// Retransmit
 		int index = -1;
 		for (int i = 0; i < buffer.size(); i++)
@@ -123,6 +127,7 @@ void Receiver(Event Current_Event) {
         Channel( SEND_ACK, last_in_order_frame, 0 , Current_Event.Time);
     }
     
+    
     /*if ( (Current_Event.Error == 0) && (Current_Event.Seq_Num == ext_expected_frame) )
     {
         last_in_order_frame = ext_expected_frame;
@@ -172,6 +177,7 @@ int main()
 			Print(Current_Event);
 			Receiver(Current_Event);
 		}
+		ticks++;
 	}
 	
 	return 0;

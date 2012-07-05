@@ -26,69 +26,77 @@ int ext_expected_frame = 0;
 int last_in_order_frame = 0;
 
 void Sender(Event Current_Event) {
-	int lowestAcked = -1;
-	if (Current_Event.Type == START_SEND) {
-		if (buffer.size() < Window_Size) {
-			// Do something
-			printf("START_SEND \n");
-			Current_Event.Pkt_Num = packetNum;
-			Current_Event.Seq_Num = Current_Event.Pkt_Num % (Window_Size + 1);
-			pkt p;
-			p.e = Current_Event;
-			p.receivedAck = false;
-			Channel(SEND_FRAME, Current_Event.Seq_Num, Current_Event.Pkt_Num, Current_Event.Time);
-			packetNum++; // Increment packet number
+	if (packetNum < N) {
+		if (Current_Event.Type == START_SEND) {
+			if (buffer.size() < Window_Size) {
+				// Do something
+				printf("START_SEND \n");
+				Current_Event.Pkt_Num = packetNum;
+				Current_Event.Seq_Num = Current_Event.Pkt_Num % (Window_Size + 1);
+				pkt p;
+				p.e = Current_Event;
+				p.receivedAck = false;
+				buffer.push_back(p);
+				Channel(SEND_FRAME, Current_Event.Seq_Num, Current_Event.Pkt_Num, Current_Event.Time);
+				packetNum++; // Increment packet number
+			}
 		}
-	}
-	// If received acknowledgement is corrupted, resend previous frame
-	else if (Current_Event.Type == RECEIVE_ACK) {
-		if (Current_Event.Error == 1) {		// Error
-			// Do nothing
+		// If received acknowledgement is corrupted, resend previous frame
+		else if (Current_Event.Type == RECEIVE_ACK) {
+			if (Current_Event.Error == 1) {		// Error
+				// Do nothing
+			}
+			else {
+				// Iterate through vector to find correct packet and mark it acknowledged
+				for (int i = 0; i < buffer.size(); i++)
+				{
+					if (buffer[i].e.Seq_Num == Current_Event.Seq_Num)
+					{
+						buffer[i].receivedAck = true;
+						break;
+					}
+				}
+				// Go through buffer and remove the first sequential 
+				while (buffer.size() != 0) {
+					//cout << "Before erasing " << buffer.size() << endl;
+					if (buffer.at(0).receivedAck) {
+						//cout << "Erasing " << endl;
+						buffer.erase(buffer.begin());
+						//cout << "After erasing " << buffer.size() << endl;
+					}
+					else
+						break;
+				}
+				if (buffer.size() < Window_Size) {
+					printf("START_SEND \n");
+					Event New_Event;
+					New_Event.Pkt_Num = packetNum;
+					New_Event.Seq_Num = New_Event.Pkt_Num % (Window_Size + 1);
+					pkt p;
+					p.e = New_Event;
+					p.receivedAck = false;
+					buffer.push_back(p);
+					Channel(SEND_FRAME, New_Event.Seq_Num, New_Event.Pkt_Num, Current_Event.Time);
+					packetNum++;
+				}
+			}
 		}
-		else {
-			// Iterate through vector to find correct packet and mark it acknowledged
+		else if (Current_Event.Type == TIMEOUT) {
+			// Retransmit
+			int index = -1;
 			for (int i = 0; i < buffer.size(); i++)
 			{
-				if (buffer[i].e.Seq_Num == Current_Event.Seq_Num)
+				//cout << "Buffer Size: " << buffer.size() << endl;
+				if (buffer[i].e.Seq_Num == Current_Event.Seq_Num && index == -1)
 				{
-					buffer[i].receivedAck = true;
-					break;
+					index = i;
 				}
-			}
-			// Go through buffer and remove the first sequential 
-			while (buffer.size() != 0) {
-				if (buffer.at(0).receivedAck) {
-					buffer.erase(buffer.begin());
+				if (index != -1) {
+					cout << "TIMEOUT and retransmit: " << buffer[i].e.Pkt_Num << endl;
+					Channel(SEND_FRAME, buffer[i].e.Seq_Num, buffer[i].e.Pkt_Num, Current_Event.Time);
 				}
-				else
-					break;
-			}
-            Event New_Event;
-            New_Event.Pkt_Num = packetNum;
-			New_Event.Seq_Num = New_Event.Pkt_Num % (Window_Size + 1);
-			pkt p;
-			p.e = New_Event;
-			p.receivedAck = false;
-			Channel(SEND_FRAME, New_Event.Seq_Num, New_Event.Pkt_Num, Current_Event.Time);
-            packetNum++;
+			}			
 		}
-	}
-	else if (Current_Event.Type == TIMEOUT) {
-		
-		cout << Current_Event.Time << endl;
-		// Retransmit
-		int index = -1;
-		for (int i = 0; i < buffer.size(); i++)
-		{
-			if (buffer[i].e.Seq_Num == Current_Event.Seq_Num)
-			{
-				index = i;
-			}
-			if (index != -1) {
-                cout << "TIMEOUT and retransmit: " << buffer[i].e.Pkt_Num << endl;
-				Channel(SEND_FRAME, buffer[i].e.Seq_Num, buffer[i].e.Pkt_Num, Current_Event.Time);
-			}
-		}			
 	}
 }
 
@@ -107,11 +115,11 @@ void Receiver(Event Current_Event) {
             last_in_order_frame = ext_expected_frame;
             ext_expected_frame = (ext_expected_frame + 1)%(Window_Size +1);
             Deliver( Current_Event,  Current_Event.Time);
-			cout << "Received and Acknowledged " << last_in_order_frame  << endl;
+			//cout << "Received and Acknowledged " << last_in_order_frame  << endl;
         }
         Channel( SEND_ACK, last_in_order_frame, 0, Current_Event.Time);
         cout << "Received Packet Number: " << Current_Event.Pkt_Num << endl;
-    }    
+    }  
 }
 
 
@@ -122,7 +130,7 @@ int main()
 	/**********************************************/
 	/* Remember to change the following variables */
 	
-	N = 25;		
+	N = 15;		
 	C = 1000000;			/* bps */
 	L = 1500*8;			/* bits, Avg length of pkts */
 	A = 54*8;			/* bits */

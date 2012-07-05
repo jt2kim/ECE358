@@ -123,6 +123,7 @@ void Receiver(Event Current_Event) {
             last_in_order_frame = ext_expected_frame;
             ext_expected_frame = (ext_expected_frame + 1)%(Window_Size +1);
             Deliver( Current_Event,  Current_Event.Time);
+			cout << "Received and Acknowledged " << last_in_order_frame + " "  << endl;
         }
         Channel( SEND_ACK, last_in_order_frame, 0 , ticks);
     }

@@ -153,12 +153,12 @@ int main()
 			|| (Current_Event.Type == TIMEOUT))
 		{
 			Print(Current_Event);
-			Sender_SRP(Current_Event);
+			Sender(Current_Event);
 		}
 		else if (Current_Event.Type == RECEIVE_FRAME)
 		{
 			Print(Current_Event);
-			Receiver_SRP(Current_Event);
+			Receiver(Current_Event);
 		}
 	}
 	

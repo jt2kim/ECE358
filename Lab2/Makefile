@@ -16,4 +16,4 @@ $(MYPROGRAM): $(SOURCE)
 	$(CC) $(LIB) $(SOURCE) -o $(MYPROGRAM)
 
 clean:
-	rm -f *.out $(MYPROGRAM) *.class ImplType
+	rm -f *.out $(MYPROGRAM) *.class *.txt ImplType

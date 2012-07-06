@@ -132,10 +132,10 @@ int main()
 	/**********************************************/
 	/* Remember to change the following variables */
 	
-	N = 10000;		
+	N = 10;		
 	C = 1000000;			/* bps */
-	L = 500;			/* bits, Avg length of pkts */
-	A = 20;			/* bits */
+	L = 1500*8;			/* bits, Avg length of pkts */
+	A = 54*8;			/* bits */
 	Prop_Delay = 0.05;		/* seconds */
 	Window_Size = 5;
 	FER = 0.01;

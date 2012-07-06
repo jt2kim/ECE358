@@ -127,12 +127,13 @@ void Receiver(Event Current_Event) {
 
 int main()
 {
+	unsigned long initial_time = clock();
 	Event Current_Event;
 	
 	/**********************************************/
 	/* Remember to change the following variables */
 	
-	N = 10;		
+	N = 10000;		
 	C = 1000000;			/* bps */
 	L = 1500*8;			/* bits, Avg length of pkts */
 	A = 54*8;			/* bits */
@@ -161,6 +162,8 @@ int main()
 			Receiver(Current_Event);
 		}
 	}
+	unsigned long final_time = clock() - initial_time;
+	cout << "Time it took to send " << N << " packets: " << final_time << endl;
 	
 	return 0;
 }

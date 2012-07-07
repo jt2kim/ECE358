@@ -140,7 +140,7 @@ int main()
 	Prop_Delay = 0.05;		/* seconds */
 	Window_Size = 5;
 	FER = 0.01;
-	Time_Out = (L/C) + (A/C) + 2*Prop_Delay;
+	Time_Out = (L/C) + (A/C) + 2.1*Prop_Delay;
 	/**********************************************/
 	ext_expected_frame = 0;
 	Initialization();

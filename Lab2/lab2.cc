@@ -141,8 +141,11 @@ int main(int argc, char* argv[])
 {
 	//unsigned long initial_time = clock();
 	FER = 0.01;
+	Window_Size = 5;
 	string strFER(argv[1]);
+	string strWS(argv[2]);
 	FER = ((double) atoi(strFER.c_str())) / 100;
+	Window_Size = atoi(strWS.c_str());
 	Event Current_Event;
 	
 	/**********************************************/
@@ -153,7 +156,7 @@ int main(int argc, char* argv[])
 	L = 1500*8;			/* bits, Avg length of pkts */
 	A = 54*8;			/* bits */
 	Prop_Delay = 0.05;		/* seconds */
-	Window_Size = 5;
+	
 	
 	Time_Out = (L/C) + (A/C) + 2.1*Prop_Delay;
 	/**********************************************/

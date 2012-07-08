@@ -37,16 +37,28 @@ void Sender(Event Current_Event) {
 				p.e = Current_Event;
 				p.receivedAck = false;
 				buffer.push_back(p);
-				Channel(SEND_FRAME, Current_Event.Seq_Num, Current_Event.Pkt_Num, Current_Event.Time);
+				Channel(SEND_FRAME, Current_Event.Seq_Num, Current_Event.Pkt_Num, Current_Event.Time + L/C);
 				packetNum++; // Increment packet number
                 
 			}
 		}
 		// If received acknowledgement is corrupted, resend previous frame
 		else if (Current_Event.Type == RECEIVE_ACK) {
-        cout << "received ack for sequence " << Current_Event.Seq_Num << endl;
 			if (Current_Event.Error == 1) {		// Error
-				// Do nothing
+				cout << "Error in Received ACK. Retransmitting... " << Current_Event.Seq_Num << endl;
+				int index = -1;
+				for (int i = 0; i < buffer.size(); i++)
+				{
+					
+					if ( (buffer[i].e.Pkt_Num == Current_Event.Pkt_Num) && (index == -1))
+					{
+						index = i;
+					}
+					if (index != -1) {
+						cout << "TIMEOUT and retransmit: " << buffer[i].e.Pkt_Num << endl;
+						Channel(SEND_FRAME, buffer[i].e.Seq_Num, buffer[i].e.Pkt_Num, Current_Event.Time + L/C);
+					}
+				}			
 			}
 			else {
 				// Iterate through vector to find correct packet and mark it acknowledged
@@ -78,7 +90,7 @@ void Sender(Event Current_Event) {
 					p.e = New_Event;
 					p.receivedAck = false;
 					buffer.push_back(p);
-					Channel(SEND_FRAME, New_Event.Seq_Num, New_Event.Pkt_Num, Current_Event.Time);
+					Channel(SEND_FRAME, New_Event.Seq_Num, New_Event.Pkt_Num, Current_Event.Time + L/C);
 					packetNum++;
 				}
 			}
@@ -95,7 +107,7 @@ void Sender(Event Current_Event) {
 				}
 				if (index != -1) {
 					cout << "TIMEOUT and retransmit: " << buffer[i].e.Pkt_Num << endl;
-					Channel(SEND_FRAME, buffer[i].e.Seq_Num, buffer[i].e.Pkt_Num, Current_Event.Time);
+					Channel(SEND_FRAME, buffer[i].e.Seq_Num, buffer[i].e.Pkt_Num, Current_Event.Time + L/C);
 				}
 			}			
 		}
@@ -119,7 +131,7 @@ void Receiver(Event Current_Event) {
             Deliver( Current_Event,  Current_Event.Time);
 			//cout << "Received and Acknowledged " << last_in_order_frame  << endl;
         }
-        Channel( SEND_ACK, last_in_order_frame, 0, Current_Event.Time);
+        Channel( SEND_ACK, last_in_order_frame, 0, Current_Event.Time + L/C);
         cout << "Received Packet Number: " << Current_Event.Pkt_Num << endl;
     }  
 }

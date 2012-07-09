@@ -46,7 +46,7 @@ void Sender(Event Current_Event) {
 		else if (Current_Event.Type == RECEIVE_ACK) {
 			if (Current_Event.Error == 1) {		// Error
 				//cout << "Error in Received ACK. Retransmitting... " << Current_Event.Seq_Num << endl;
-				int index = -1;
+				/*int index = -1;
 				for (int i = 0; i < buffer.size(); i++)
 				{
 					
@@ -55,12 +55,13 @@ void Sender(Event Current_Event) {
 						index = i;
 					}
 					if (index != -1) {
-						cout << "TIMEOUT and retransmit: " << buffer[i].e.Pkt_Num << endl;
+						//cout << "TIMEOUT and retransmit: " << buffer[i].e.Pkt_Num << endl;
 						Channel(SEND_FRAME, buffer[i].e.Seq_Num, buffer[i].e.Pkt_Num, Current_Event.Time + L/C);
 					}
-				}			
+				}	*/		
 			}
 			else {
+
 				// Iterate through vector to find correct packet and mark it acknowledged
 				for (int i = 0; i < buffer.size(); i++)
 				{
@@ -82,7 +83,7 @@ void Sender(Event Current_Event) {
 						break;
 				}
 				if (buffer.size() < Window_Size) {
-					printf("SEND_FRAME \n");
+					//cout << "SENDING " << packetNum << endl;
 					Event New_Event;
 					New_Event.Pkt_Num = packetNum;
 					New_Event.Seq_Num = New_Event.Pkt_Num % (Window_Size + 1);
@@ -105,7 +106,7 @@ void Sender(Event Current_Event) {
 				{
 					index = i;
 				}
-				if (index != -1) {
+				if (index != -1)  {
 					//cout << "TIMEOUT and retransmit: " << buffer[i].e.Pkt_Num << endl;
 					Channel(SEND_FRAME, buffer[i].e.Seq_Num, buffer[i].e.Pkt_Num, Current_Event.Time + L/C);
 				}
@@ -131,7 +132,7 @@ void Receiver(Event Current_Event) {
             Deliver( Current_Event,  Current_Event.Time);
 			//cout << "Received and Acknowledged " << last_in_order_frame  << endl;
         }
-        Channel( SEND_ACK, last_in_order_frame, 0, Current_Event.Time + L/C);
+        Channel( SEND_ACK, Current_Event.Seq_Num, 0, Current_Event.Time + A/C);
         //cout << "Received Packet Number: " << Current_Event.Pkt_Num << endl;
     }  
 }
@@ -140,23 +141,22 @@ void Receiver(Event Current_Event) {
 int main(int argc, char* argv[])
 {
 	//unsigned long initial_time = clock();
-	FER = 0.01;
+	FER = 0.05;
 	Window_Size = 5;
 	string strFER(argv[1]);
 	string strWS(argv[2]);
-	FER = ((double) atoi(strFER.c_str())) / 100;
+	FER = ((double) atoi(strFER.c_str())) / 100.0;
 	Window_Size = atoi(strWS.c_str());
 	Event Current_Event;
 	
 	/**********************************************/
 	/* Remember to change the following variables */
 	
-	N = 10000;		
+	N = 500000;		
 	C = 1000000;			/* bps */
 	L = 1500*8;			/* bits, Avg length of pkts */
 	A = 54*8;			/* bits */
 	Prop_Delay = 0.05;		/* seconds */
-	
 	
 	Time_Out = (L/C) + (A/C) + 2.1*Prop_Delay;
 	/**********************************************/
@@ -172,12 +172,12 @@ int main(int argc, char* argv[])
 			|| (Current_Event.Type == TIMEOUT))
 		{
 			Print(Current_Event);
-			Sender_SRP(Current_Event);
+			Sender(Current_Event);
 		}
 		else if (Current_Event.Type == RECEIVE_FRAME)
 		{
 			Print(Current_Event);
-			Receiver_SRP(Current_Event);
+			Receiver(Current_Event);
 		}
 	}
 	//unsigned long final_time = clock() - initial_time;

@@ -44,47 +44,12 @@ void Sender(Event Current_Event) {
 		}
 		// If received acknowledgement is corrupted, resend previous frame
 		else if (Current_Event.Type == RECEIVE_ACK) {
-			if (Current_Event.Error == 1) {		// Error
-				//cout << "Error in Received ACK. Retransmitting... " << Current_Event.Seq_Num << endl;
-				/*int index = -1;
-				for (int i = 0; i < buffer.size(); i++)
-				{
-					
-					if ( (buffer[i].e.Pkt_Num == Current_Event.Pkt_Num) && (index == -1))
-					{
-						index = i;
-					}
-					if (index != -1) {
-						//cout << "TIMEOUT and retransmit: " << buffer[i].e.Pkt_Num << endl;
-						Channel(SEND_FRAME, buffer[i].e.Seq_Num, buffer[i].e.Pkt_Num, Current_Event.Time + L/C);
-					}
-				}	*/		
-			}
-			else {
-
-				// Iterate through vector to find correct packet and mark it acknowledged
-				for (int i = 0; i < buffer.size(); i++)
-				{
-					if (buffer[i].e.Seq_Num == Current_Event.Seq_Num)
-					{
-						buffer[i].receivedAck = true;
-						break;
-					}
-				}
-				// Go through buffer and remove the first sequential packet
-				while (buffer.size() != 0) {
-					//cout << "Before erasing " << buffer.size() << endl;
-					if (buffer.at(0).receivedAck) {
-						//cout << "Erasing " << endl;
-						buffer.erase(buffer.begin());
-						//cout << "After erasing " << buffer.size() << endl;
-					}
-					else
-						break;
-				}
-				if (buffer.size() < Window_Size) {
-					//cout << "SENDING " << packetNum << endl;
-					Event New_Event;
+			if (Current_Event.Error != 1) {
+                if(buffer[0].e.Seq_Num == Current_Event.Seq_Num)
+                {
+                    buffer.erase(buffer.begin());
+                    
+                    Event New_Event;
 					New_Event.Pkt_Num = packetNum;
 					New_Event.Seq_Num = New_Event.Pkt_Num % (Window_Size + 1);
 					pkt p;
@@ -93,7 +58,7 @@ void Sender(Event Current_Event) {
 					buffer.push_back(p);
 					Channel(SEND_FRAME, New_Event.Seq_Num, New_Event.Pkt_Num, Current_Event.Time + L/C);
 					packetNum++;
-				}
+                }
 			}
 		}
 		else if (Current_Event.Type == TIMEOUT) {
